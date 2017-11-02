@@ -1,5 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using AddressProcessing.IOWrappers;
+using AddressProcessing.Models;
 
 namespace AddressProcessing.CSV
 {
@@ -8,89 +11,83 @@ namespace AddressProcessing.CSV
            Assume this code is in production and backwards compatibility must be maintained.
     */
 
-    public class CSVReaderWriter
+    public class CSVReaderWriter : IDisposable
     {
-        private StreamReader _readerStream = null;
-        private StreamWriter _writerStream = null;
+        private IReadable _reader;
+        private IWritable _writer;
+
+        public CSVReaderWriter() { }
+        public CSVReaderWriter(IReadable reader)
+        {
+            _reader = reader;
+        }
+        public CSVReaderWriter(IWritable writer)
+        {
+            _writer = writer;
+        }
+        public CSVReaderWriter(IReadable reader, IWritable writer)
+        {
+            _reader = reader;
+            _writer = writer;
+        }
 
         [Flags]
         public enum Mode { Read = 1, Write = 2 };
 
-        public void Open(string fileName, Mode mode)
+        public void Open(string path, Mode mode)
         {
-            if (mode == Mode.Read)
+            switch (mode)
             {
-                _readerStream = File.OpenText(fileName);
-            }
-            else if (mode == Mode.Write)
-            {
-                FileInfo fileInfo = new FileInfo(fileName);
-                _writerStream = fileInfo.CreateText();
-            }
-            else
-            {
-                throw new Exception("Unknown file mode for " + fileName);
+                case Mode.Read:
+                    _reader = new StreamReadableWrapper(path);
+                    break;
+                case Mode.Write:
+                    _reader = new StreamReadableWrapper(path);
+                    break;
+                default:
+                    throw new UnknownFileModeException("Unknown file mode for " + path);
             }
         }
 
         public void Write(params string[] columns)
         {
-            string outPut = "";
-
             for (int i = 0; i < columns.Length; i++)
             {
-                outPut += columns[i];
-                if ((columns.Length - 1) != i)
-                {
-                    outPut += "\t";
-                }
-            }
+                var output = columns[i];
 
-            WriteLine(outPut);
+                var isNotLastColumn = (columns.Length - 1) != i;
+
+                if (isNotLastColumn)
+                {
+                    output += Character.Tab;
+                }
+                _writer.WriteLine(output);
+            }
         }
 
         public bool Read(string column1, string column2)
         {
-            const int FIRST_COLUMN = 0;
-            const int SECOND_COLUMN = 1;
+            var columns = ReadNextRow();
 
-            string line;
-            string[] columns;
-
-            char[] separator = { '\t' };
-
-            line = ReadLine();
-            columns = line.Split(separator);
-
-            if (columns.Length == 0)
+            if (columns.Length > 0)
             {
-                column1 = null;
-                column2 = null;
-
-                return false;
+                column1 = columns[0].Text;
+                column2 = columns[1].Text;
             }
             else
             {
-                column1 = columns[FIRST_COLUMN];
-                column2 = columns[SECOND_COLUMN];
-
-                return true;
+                column1 = null;
+                column2 = null;
             }
+
+            return columns.Length > 0;
         }
 
         public bool Read(out string column1, out string column2)
         {
-            const int FIRST_COLUMN = 0;
-            const int SECOND_COLUMN = 1;
+            var line = _reader.ReadLine();
 
-            string line;
-            string[] columns;
-
-            char[] separator = { '\t' };
-
-            line = ReadLine();
-
-            if (line == null)
+            if (string.IsNullOrWhiteSpace(line))
             {
                 column1 = null;
                 column2 = null;
@@ -98,45 +95,39 @@ namespace AddressProcessing.CSV
                 return false;
             }
 
-            columns = line.Split(separator);
+            var columns = line.Split(Character.Tab);
 
-            if (columns.Length == 0)
+            column1 = columns[0];
+            column2 = columns[1];
+
+            return true;
+        }
+
+        private Column[] ReadNextRow()
+        {
+            var line = _reader.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(line))
             {
-                column1 = null;
-                column2 = null;
-
-                return false;
-            } 
-            else
-            {
-                column1 = columns[FIRST_COLUMN];
-                column2 = columns[SECOND_COLUMN];
-
-                return true;
+                return null;
             }
-        }
 
-        private void WriteLine(string line)
-        {
-            _writerStream.WriteLine(line);
-        }
+            var columns = line.Split(Character.Tab)
+                .Select(x => new Column { Text = x })
+                .ToArray();
 
-        private string ReadLine()
-        {
-            return _readerStream.ReadLine();
+            return columns;
         }
 
         public void Close()
         {
-            if (_writerStream != null)
-            {
-                _writerStream.Close();
-            }
+            Dispose();
+        }
 
-            if (_readerStream != null)
-            {
-                _readerStream.Close();
-            }
+        public void Dispose()
+        {
+            if (_reader != null) _reader.Dispose();
+            if (_writer != null) _writer.Dispose();
         }
     }
 }

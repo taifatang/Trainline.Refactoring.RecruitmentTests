@@ -8,9 +8,12 @@ namespace AddressProcessing.CSV
 
         Please leave the rest of this file as it is so we can discuss your concerns during the next stage of the interview process.
         
-        *)
-        *)
-        *)
+        *) primitives, string in this case are passed by value though it itself is a reference type, allocating it to null, column[0] would yield nothing but mislead others
+        *) violating single responsibility principle: split into CSV reader && CSV writer, nested enum, single method mutiple operation 
+        *) violating open and closed principle: e.g. can't read more than two columns without code modifications, enum => if else statement
+        *) read(without out param) dangerously modifying incoming object state
+        *) difficult to unittest, streamReader and streamWriter tied together
+     
     */
 
     public class CSVReaderWriterForAnnotation
