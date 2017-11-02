@@ -3,11 +3,11 @@ using System.IO;
 
 namespace AddressProcessing.IOWrappers
 {
-    public class StreamWritableWrapper : IWritable
+    public class StreamWriterWrapper : IWritable
     {
         private readonly StreamWriter _streamWriter;
 
-        public StreamWritableWrapper(string filePath)
+        public StreamWriterWrapper(string filePath)
         {
             FileInfo fileInfo = new FileInfo(filePath);
             _streamWriter = fileInfo.CreateText();

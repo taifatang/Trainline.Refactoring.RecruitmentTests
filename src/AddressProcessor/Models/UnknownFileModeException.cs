@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace AddressProcessing.CSV
+namespace AddressProcessing.Models
 {
     [Serializable]
     public class UnknownFileModeException : Exception

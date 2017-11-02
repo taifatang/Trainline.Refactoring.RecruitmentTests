@@ -3,11 +3,11 @@ using System.IO;
 
 namespace AddressProcessing.IOWrappers
 {
-    public class StreamReadableWrapper : IReadable
+    public class StreamReaderWrapper : IReadable
     {
         private readonly StreamReader _streamReader;
 
-        public StreamReadableWrapper(string filePath)
+        public StreamReaderWrapper(string filePath)
         {
             _streamReader = File.OpenText(filePath);
         }

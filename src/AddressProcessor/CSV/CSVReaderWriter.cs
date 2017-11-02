@@ -39,10 +39,10 @@ namespace AddressProcessing.CSV
             switch (mode)
             {
                 case Mode.Read:
-                    _reader = new StreamReadableWrapper(path);
+                    _reader = new StreamReaderWrapper(path);
                     break;
                 case Mode.Write:
-                    _reader = new StreamReadableWrapper(path);
+                    _writer = new StreamWriterWrapper(path);
                     break;
                 default:
                     throw new UnknownFileModeException("Unknown file mode for " + path);
@@ -69,25 +69,14 @@ namespace AddressProcessing.CSV
         {
             var columns = ReadNextRow();
 
-            if (columns.Length > 0)
-            {
-                column1 = columns[0].Text;
-                column2 = columns[1].Text;
-            }
-            else
-            {
-                column1 = null;
-                column2 = null;
-            }
-
             return columns.Length > 0;
         }
 
         public bool Read(out string column1, out string column2)
         {
-            var line = _reader.ReadLine();
+            var columns = ReadNextRow();
 
-            if (string.IsNullOrWhiteSpace(line))
+            if (columns.Length == 0)
             {
                 column1 = null;
                 column2 = null;
@@ -95,10 +84,8 @@ namespace AddressProcessing.CSV
                 return false;
             }
 
-            var columns = line.Split(Character.Tab);
-
-            column1 = columns[0];
-            column2 = columns[1];
+            column1 = columns[0].Text;
+            column2 = columns[1].Text;
 
             return true;
         }

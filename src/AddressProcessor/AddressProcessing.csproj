@@ -59,14 +59,14 @@
     <Compile Include="CSV\CSVReaderWriter.cs" />
     <Compile Include="IOWrappers\IReadable.cs" />
     <Compile Include="IOWrappers\IWritable.cs" />
-    <Compile Include="IOWrappers\StreamReadableWrapper.cs" />
+    <Compile Include="IOWrappers\StreamReaderWrapper.cs" />
     <Compile Include="Models\Column.cs" />
     <Compile Include="Models\UnknownFileModeException.cs" />
     <Compile Include="Models\Character.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Address\v1\IMailShot.cs" />
     <Compile Include="Address\v2\IMailShot.cs" />
-    <Compile Include="IOWrappers\StreamWritableWrapper.cs" />
+    <Compile Include="IOWrappers\StreamWriterWrapper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
