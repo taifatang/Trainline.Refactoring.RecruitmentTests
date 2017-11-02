@@ -1,12 +1,12 @@
-#Trainline 
+# Trainline 
 
-###Summary
+## Summary
 Please complete the two coding exercise steps; a brief code review and then a
 refactor of a class.
 
 We do not expect you to spend more than two to three hours on this exercise.
 
-###Exercise
+## Exercise
 A junior developer was tasked with writing a reusable implementation for a 
 mass mailing application to read and write text files that hold tab separated 
 data. They implemented the CSVReaderWriter class as part of this project.
