@@ -9,8 +9,13 @@ namespace AddressProcessing.IOWrappers
 
         public StreamWriterWrapper(string filePath)
         {
-            FileInfo fileInfo = new FileInfo(filePath);
+            var fileInfo = new FileInfo(filePath);
             _streamWriter = fileInfo.CreateText();
+        }
+
+        public StreamWriterWrapper(Stream stream)
+        {
+            _streamWriter = new StreamWriter(stream);
         }
 
         public void WriteLine(string output)

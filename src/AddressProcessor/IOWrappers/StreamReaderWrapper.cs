@@ -12,6 +12,11 @@ namespace AddressProcessing.IOWrappers
             _streamReader = File.OpenText(filePath);
         }
 
+        public StreamReaderWrapper(Stream stream)
+        {
+            _streamReader = new StreamReader(stream);
+        }
+
         public string ReadLine()
         {
             return _streamReader.ReadLine();

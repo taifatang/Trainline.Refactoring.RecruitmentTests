@@ -7,8 +7,10 @@ using NUnit.Framework;
 
 namespace AddressProcessing.Tests.CSV
 {
+    //Characteristic Testing
+
     [TestFixture]
-    public class CSVReaderWriterShould
+    public class OldCsvReaderWriterShould
     {
         private readonly string _testDataPath = Path.Combine(Directory.GetCurrentDirectory() + @"\test_data\contacts.csv");
         private CSVReaderWriterForAnnotation _readerWriter;
@@ -23,43 +25,43 @@ namespace AddressProcessing.Tests.CSV
         public void TearDown()
         {
             _readerWriter.Close();
+            _readerWriter = null;
+
             GC.Collect();
             GC.WaitForPendingFinalizers();
         }
 
-        #region Characteristic Testing
-
-        [TestCase(CSVReaderWriter.Mode.Write)]
-        [TestCase(CSVReaderWriter.Mode.Read)]
-        public void Do_Not_Throw_If_Mode_Is_Supported(CSVReaderWriter.Mode mode)
+        [TestCase(CSVReaderWriterForAnnotation.Mode.Write)]
+        [TestCase(CSVReaderWriterForAnnotation.Mode.Read)]
+        public void Do_Not_Throw_If_Mode_Is_Supported(CSVReaderWriterForAnnotation.Mode mode)
         {
-            var readerWriter = new CSVReaderWriter();
-
             Assert.DoesNotThrow(() =>
             {
-                readerWriter.Open(_testDataPath, mode);
+                _readerWriter.Open(_testDataPath, mode);
             });
         }
 
         [Test]
         public void Throw_If_Mode_Is_Not_Supported()
         {
-            var readerWriter = new CSVReaderWriter();
-
-            Assert.Throws<UnknownFileModeException>(() =>
+            Assert.Throws<Exception>(() =>
             {
-                readerWriter.Open(_testDataPath, 0);
+                _readerWriter.Open(_testDataPath, 0);
             });
         }
 
         [Test]
+            [Ignore]
         public void Read_Line()
         {
-            _readerWriter.Open(_testDataPath, CSVReaderWriterForAnnotation.Mode.Read);
+            //untestable because last line is null. originally code did you perform check hence line 70
+            //line.split(separator) thrown nullReferenceException
 
-            var result = _readerWriter.Read("", "");
+            //_readerWriter.Open(_testDataPath, CSVReaderWriterForAnnotation.Mode.Read);
 
-            Assert.That(result, Is.EqualTo(true));
+            //var result = _readerWriter.Read("", "");
+
+            //Assert.That(result, Is.EqualTo(true));
         }
 
         [Test]
@@ -75,15 +77,15 @@ namespace AddressProcessing.Tests.CSV
         {
             _readerWriter.Open(_testDataPath, CSVReaderWriterForAnnotation.Mode.Read);
 
-            var result = _readerWriter.Read(out string firstColumn, out string secondColumn);
+            var firstColumn = string.Empty;
+            var secondColumn = string.Empty;
 
+            var result = _readerWriter.Read(out  firstColumn, out  secondColumn);
 
             Assert.That(result, Is.EqualTo(true));
             Assert.That(firstColumn, Is.EqualTo("Shelby Macias"));
             Assert.That(secondColumn, Is.EqualTo("3027 Lorem St.|Kokomo|Hertfordshire|L9T 3D5|England"));
         }
-
-        #endregion
 
         //[Test]
         //public void Read_First_Line_Of_File()

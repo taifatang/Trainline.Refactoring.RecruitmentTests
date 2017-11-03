@@ -90,6 +90,11 @@ namespace AddressProcessing.CSV
             return true;
         }
 
+        public ReaderResult ReadLine()
+        {
+            return new ReaderResult { Columns = ReadNextRow() };
+        }
+
         private Column[] ReadNextRow()
         {
             var line = _reader.ReadLine();
@@ -116,5 +121,14 @@ namespace AddressProcessing.CSV
             if (_reader != null) _reader.Dispose();
             if (_writer != null) _writer.Dispose();
         }
+    }
+
+    public class ReaderResult
+    {
+        public bool HasResult
+        {
+            get { return Columns != null && Columns.Length > 0; }
+        }
+        public Column[] Columns { get; set; }
     }
 }
