@@ -69,7 +69,7 @@
     <Compile Include="AddressFileProcessorTests.cs" />
     <Compile Include="CSV\CsvReaderWriterIntergrationTests.cs" />
     <Compile Include="CSV\CSVReaderWriterShould.cs" />
-    <Compile Include="CSV\OldCsvReaderWriterShould.cs" />
+    <Compile Include="CSV\CsvReaderWriterCharacteristicTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

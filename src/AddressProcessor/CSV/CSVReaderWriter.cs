@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using AddressProcessing.IOWrappers;
@@ -51,9 +52,17 @@ namespace AddressProcessing.CSV
 
         public void Write(params string[] columns)
         {
+            var row = BuildRowString(columns);
+            _writer.WriteLine(row);
+        }
+
+        private static string BuildRowString(string[] columns)
+        {
+            var output = string.Empty;
+
             for (int i = 0; i < columns.Length; i++)
             {
-                var output = columns[i];
+                output += columns[i];
 
                 var isNotLastColumn = (columns.Length - 1) != i;
 
@@ -61,8 +70,9 @@ namespace AddressProcessing.CSV
                 {
                     output += Character.Tab;
                 }
-                _writer.WriteLine(output);
             }
+
+            return output;
         }
 
         public bool Read(string column1, string column2)
@@ -76,7 +86,7 @@ namespace AddressProcessing.CSV
         {
             var columns = ReadNextRow();
 
-            if (columns.Length == 0)
+            if (columns == null || columns.Length == 0)
             {
                 column1 = null;
                 column2 = null;

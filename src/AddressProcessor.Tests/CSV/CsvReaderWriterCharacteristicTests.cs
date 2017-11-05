@@ -10,7 +10,7 @@ namespace AddressProcessing.Tests.CSV
     //Characteristic Testing
 
     [TestFixture]
-    public class OldCsvReaderWriterShould
+    public class CsvReaderWriterCharacteristicTests
     {
         private readonly string _testDataPath = Path.Combine(Directory.GetCurrentDirectory() + @"\test_data\contacts.csv");
         private CSVReaderWriterForAnnotation _readerWriter;
@@ -20,6 +20,7 @@ namespace AddressProcessing.Tests.CSV
         {
             _readerWriter = new CSVReaderWriterForAnnotation();
         }
+
 
         [TearDown]
         public void TearDown()
@@ -86,36 +87,5 @@ namespace AddressProcessing.Tests.CSV
             Assert.That(firstColumn, Is.EqualTo("Shelby Macias"));
             Assert.That(secondColumn, Is.EqualTo("3027 Lorem St.|Kokomo|Hertfordshire|L9T 3D5|England"));
         }
-
-        //[Test]
-        //public void Read_First_Line_Of_File()
-        //{
-        //    var _readerWriter = new CSVReaderWriter();
-        //    _readerWriter.Open(_testDataPath, CSVReaderWriter.Mode.Read);
-
-        //    var firstColumn = string.Empty;
-        //    var secondColumn = string.Empty;
-
-        //    _readerWriter.Read(out firstColumn, out secondColumn);
-
-        //    Assert.That(firstColumn, Is.EqualTo("Shelby Macias"));
-        //}
-
-        //[Test]
-        //public void Read_Last_Line_Of_File()
-        //{
-        //    var _readerWriter = new CSVReaderWriter();
-        //    _readerWriter.Open(_testDataPath, CSVReaderWriter.Mode.Read);
-
-        //    var firstColumn = string.Empty;
-        //    var secondColumn = string.Empty;
-
-        //    while (_readerWriter.Read(out firstColumn, out secondColumn))
-        //    {
-
-        //    }
-
-        //    Assert.That(firstColumn, Is.EqualTo("Leila Neal"));
-        //}
     }
 }

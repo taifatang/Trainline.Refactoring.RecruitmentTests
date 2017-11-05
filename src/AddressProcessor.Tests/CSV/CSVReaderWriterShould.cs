@@ -1,58 +1,59 @@
 ﻿using System.IO;
 using AddressProcessing.CSV;
 using AddressProcessing.IOWrappers;
+using Moq;
 using NUnit.Framework;
 
 namespace AddressProcessing.Tests.CSV
 {
     public class CsvReaderWriterShould
     {
-        private  Stream _testData;
-        private CSVReaderWriter _readerWriter;
+        private CSVReaderWriter _csvReaderWriter;
+        private Mock<IReadable> _reader;
+        private Mock<IWritable> _writer;
 
         [SetUp]
         public void SetUp()
         {
-            string test = "Hello world";
-            _testData = new MemoryStream();
-            StreamWriter writer = new StreamWriter( _testData );
-            writer.Write( test );
-            writer.Flush();
+            _reader = new Mock<IReadable>();
+            _writer = new Mock<IWritable>();
 
-            _readerWriter = new CSVReaderWriter();
+            _csvReaderWriter = new CSVReaderWriter(_reader.Object, _writer.Object);
         }
 
         [TearDown]
         public void TearDown()
         {
-            _readerWriter.Close();
-            _readerWriter = null;
-        }
-        [Test]
-        public void Read_First_Line_Of_File()
-        {
-            var _readerWriter = new CSVReaderWriter(new StreamReaderWrapper(_testData));
-
-            var result = _readerWriter.ReadLine();
-
-            Assert.That(result.HasResult, Is.EqualTo("Hello world"));
-            Assert.That(result.Columns[0], Is.EqualTo("Hello world"));
+            _csvReaderWriter.Close();
+            _csvReaderWriter = null;
         }
 
         [Test]
-        public void Read_Last_Line_Of_File()
+        public void Write_Line()
         {
-            var _readerWriter = new CSVReaderWriter();
+            _csvReaderWriter.Write("Hello world");
 
-            var firstColumn = string.Empty;
-            var secondColumn = string.Empty;
-
-            while (_readerWriter.Read(out firstColumn, out secondColumn))
-            {
-
-            }
-
-            Assert.That(firstColumn, Is.EqualTo("Leila Neal"));
+            _writer.Verify(x=> x.WriteLine(It.IsAny<string>()),Times.Once);
         }
+
+        [Test]
+        public void Append_Tab_On_Write_Operation_Between_Columns()
+        {
+            _csvReaderWriter.Write("Hello", "world");
+
+            _writer.Verify(x => x.WriteLine("Hello\tworld"), Times.Once);
+        }
+
+        [Test]
+        public void Read_Line()
+        {
+            _reader.Setup(x => x.ReadLine()).Returns("Hello world");
+
+            _csvReaderWriter.ReadLine();
+
+            _reader.Verify(x => x.ReadLine());
+        }
+        
+
     }
 }
