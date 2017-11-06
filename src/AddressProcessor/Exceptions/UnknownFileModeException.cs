@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace AddressProcessing.Models
+namespace AddressProcessing.Exceptions
 {
     [Serializable]
     public class UnknownFileModeException : Exception

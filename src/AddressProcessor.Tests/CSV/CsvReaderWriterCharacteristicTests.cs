@@ -1,24 +1,21 @@
 ﻿using System;
 using System.IO;
-using System.Threading;
 using AddressProcessing.CSV;
-using AddressProcessing.Models;
+using AddressProcessing.Exceptions;
 using NUnit.Framework;
 
 namespace AddressProcessing.Tests.CSV
 {
-    //Characteristic Testing
-
     [TestFixture]
-    public class CsvReaderWriterCharacteristicTests
+    internal class CsvReaderWriterCharacteristicTests
     {
         private readonly string _testDataPath = Path.Combine(Directory.GetCurrentDirectory() + @"\test_data\contacts.csv");
-        private CSVReaderWriterForAnnotation _readerWriter;
+        private CSVReaderWriter _readerWriter;
 
         [SetUp]
         public void SetUp()
         {
-            _readerWriter = new CSVReaderWriterForAnnotation();
+            _readerWriter = new CSVReaderWriter();
         }
 
 
@@ -32,9 +29,9 @@ namespace AddressProcessing.Tests.CSV
             GC.WaitForPendingFinalizers();
         }
 
-        [TestCase(CSVReaderWriterForAnnotation.Mode.Write)]
-        [TestCase(CSVReaderWriterForAnnotation.Mode.Read)]
-        public void Do_Not_Throw_If_Mode_Is_Supported(CSVReaderWriterForAnnotation.Mode mode)
+        [TestCase(CSVReaderWriter.Mode.Write)]
+        [TestCase(CSVReaderWriter.Mode.Read)]
+        public void Do_Not_Throw_If_Mode_Is_Supported(CSVReaderWriter.Mode mode)
         {
             Assert.DoesNotThrow(() =>
             {
@@ -45,14 +42,14 @@ namespace AddressProcessing.Tests.CSV
         [Test]
         public void Throw_If_Mode_Is_Not_Supported()
         {
-            Assert.Throws<Exception>(() =>
+            Assert.Throws<UnknownFileModeException>(() =>
             {
                 _readerWriter.Open(_testDataPath, 0);
             });
         }
 
         [Test]
-            [Ignore]
+        [Ignore]
         public void Read_Line()
         {
             //untestable because last line is null. originally code did you perform check hence line 70
@@ -74,18 +71,9 @@ namespace AddressProcessing.Tests.CSV
         }
 
         [Test]
+        [Ignore]
         public void Read_Output_Line()
         {
-            _readerWriter.Open(_testDataPath, CSVReaderWriterForAnnotation.Mode.Read);
-
-            var firstColumn = string.Empty;
-            var secondColumn = string.Empty;
-
-            var result = _readerWriter.Read(out  firstColumn, out  secondColumn);
-
-            Assert.That(result, Is.EqualTo(true));
-            Assert.That(firstColumn, Is.EqualTo("Shelby Macias"));
-            Assert.That(secondColumn, Is.EqualTo("3027 Lorem St.|Kokomo|Hertfordshire|L9T 3D5|England"));
         }
     }
 }

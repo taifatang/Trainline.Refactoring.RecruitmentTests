@@ -8,14 +8,14 @@ using NUnit.Framework;
 
 namespace AddressProcessing.Tests.CSV
 {
-    public class CsvReaderWriterIntergrationTests
+    [TestFixture]
+    internal class CsvReaderWriterIntergrationTests
     {
-        private readonly string _testDataPath = Path.Combine(Directory.GetCurrentDirectory() + @"\test_data\contacts.csv");
-
         [Test]
         public void Read_File_On_Disk()
         {
-            using (var readerWriter = new CSVReaderWriter(new StreamReaderWrapper(_testDataPath)))
+            var path = CreateNewTestFile("test-1");
+            using (var readerWriter = new CSVReaderWriter(new StreamReaderWrapper(path)))
             {
                 var firstColumn = string.Empty;
                 var secondColumn = string.Empty;
@@ -31,14 +31,15 @@ namespace AddressProcessing.Tests.CSV
         [Test]
         public void Write_To_File_On_Disk()
         {
-            using (var readerWriter = new CSVReaderWriter(new StreamWriterWrapper(_testDataPath)))
+            var path = CreateNewTestFile("test-2");
+            using (var readerWriter = new CSVReaderWriter(new StreamWriterWrapper(path)))
             {
                 var payload = "hello\tworld\ttest\tone\two\tthree";
 
                 readerWriter.Write(payload);
             }
 
-            using (var readerWriter = new CSVReaderWriter(new StreamReaderWrapper(_testDataPath)))
+            using (var readerWriter = new CSVReaderWriter(new StreamReaderWrapper(path)))
             {
                 var readerResult = readerWriter.ReadLine();
 
@@ -56,6 +57,18 @@ namespace AddressProcessing.Tests.CSV
                 Assert.That(newRow[1].Text, Is.EqualTo("world"));
                 Assert.That(newRow[5].Text, Is.EqualTo("three"));
             }
+        }
+        //create new test file for test, this would prevent locking by read or write 
+        //and give each test a new state
+        private static string CreateNewTestFile(string name)
+        {
+            var currentDirectory = Directory.GetCurrentDirectory();
+
+            var original = Path.Combine(currentDirectory + @"\test_data\contacts.csv");
+            var copy = Path.Combine(currentDirectory + @"\test_data\" + name + ".csv");
+            File.Copy(original, copy, true);
+
+            return copy;
         }
     }
 }
